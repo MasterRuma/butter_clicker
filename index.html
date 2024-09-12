@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>트릭컬 리바이브 버터 클릭커</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      a {
+        font-family: "Noto Sans KR", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden; /* 화면 밖으로 나가는 애니메이션을 숨기기 */
+      }
+
+      .death_style {
+        font-size: 1.5em;
+        color: #333;
+        position: absolute;
+        top: 80%; /* 화면 상단에서 75px 떨어진 위치 */
+        width: 100%; /* 중앙 정렬을 위해 너비 100% */
+        text-align: center; /* 중앙 정렬 */
+      }
+
+      .count_style {
+        font-size: 2em;
+        color: #333;
+        position: absolute;
+        top: 15%; /* 화면 상단에서 75px 떨어진 위치 */
+        width: 100%; /* 중앙 정렬을 위해 너비 100% */
+        text-align: center; /* 중앙 정렬 */
+      }
+
+      img#butter-button {
+        cursor: pointer;
+        width: 300px; /* 버튼 크기 */
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+        position: relative;
+        z-index: 1; /* 버튼을 애니메이션 위로 올리기 */
+      }
+
+      img#butter-button:hover {
+        transform: scale(1.1);
+      }
+
+      .move {
+        animation: moveRightToLeft 1.5s linear forwards;
+        position: absolute;
+        top: 50%; /* 화면의 중간에 위치 */
+        left: 50%;
+        transform: translate(-50%, -50%); /* 중앙 정렬 */
+        width: 500px; /* 버튼과 같은 크기 */
+        height: auto; /* 버튼과 비율을 맞추기 위해 자동으로 높이 설정 */
+        z-index: 0; /* 애니메이션을 버튼 뒤로 보내기 */
+      }
+
+      @keyframes moveRightToLeft {
+        from {
+          left: 100%; /* 화면 오른쪽 바깥쪽에서 시작 */
+        }
+        to {
+          left: -300px; /* 버튼과 같은 너비로 화면을 넘어가는 위치 */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="death_style">
+      <a>주말농장 간 횟수</a>
+      <a id="death_count">0</a>
+      <a>회</a>
+    </div>
+    <div class="count_style">
+      <a>옐로카드</a>
+      <a id="count">0</a>
+      <a>장</a>
+    </div>
+    <img
+      id="butter-button"
+      src="assets/butter_button.png"
+      onclick="press_butter()"
+    />
+
+    <script>
+      // 페이지 로드 시 카운트 값을 로컬 스토리지에서 불러오기
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const storedCount = localStorage.getItem("count");
+        const storeddieCount = localStorage.getItem("death_count");
+        if (storedCount) {
+          document.getElementById("count").innerHTML = storedCount;
+        }
+        if (storeddieCount) {
+          document.getElementById("death_count").innerHTML = storeddieCount;
+        }
+      });
+
+      function press_butter() {
+        let count = document.getElementById("count").innerHTML;
+        count = parseInt(count);
+        count += 1;
+        document.getElementById("count").innerHTML = count;
+
+        // 카운트 값을 로컬 스토리지에 저장
+        localStorage.setItem("count", count);
+
+        const easter_egg = Math.floor(Math.random() * 11);
+
+        if (count % 100 === 0) {
+          create_animation("assets/angry.png", "assets/angry.wav");
+          count = 0;
+          death_count = document.getElementById("death_count").innerHTML;
+          death_count = parseInt(death_count);
+          death_count += 1;
+          document.getElementById("death_count").innerHTML = death_count;
+          document.getElementById("count").innerHTML = count;
+          localStorage.setItem("death_count", death_count);
+        } else {
+          if (easter_egg <= 2) {
+            create_animation("assets/wawaa.png", "assets/wawaa.mp3");
+          } else {
+            create_animation("assets/butter.gif", "assets/butter.mp3");
+          }
+        }
+      }
+
+      function create_animation(imageSrc, audioSrc) {
+        var audio = new Audio(audioSrc);
+        audio.play();
+
+        var butterAnimation = document.createElement("img");
+        butterAnimation.src = imageSrc;
+        butterAnimation.className = "move"; // 애니메이션 클래스 추가
+
+        document.body.appendChild(butterAnimation);
+
+        butterAnimation.addEventListener("animationend", () => {
+          butterAnimation.remove(); // 애니메이션이 끝나면 이미지 제거
+        });
+      }
+
+      // 우클릭 방지 기능
+      document.addEventListener("contextmenu", (event) => {
+        event.preventDefault(); // 기본 컨텍스트 메뉴 방지
+      });
+
+      // 이미지 드래그 방지 기능
+      document.addEventListener("dragstart", (event) => {
+        event.preventDefault(); // 기본 드래그 동작 방지
+      });
+    </script>
+  </body>
+</html>
